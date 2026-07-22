@@ -20,6 +20,10 @@
       .price { font-size:32px; font-weight:850; }
       ul { padding-left:20px; color:var(--muted); }
       .proof { margin-top:48px; padding:28px; border-left:4px solid var(--accent); background:var(--panel); }
+      .evidence { margin-top:48px; }
+      .evidence a { color:var(--accent); }
+      .fit { margin-top:48px; }
+      .fit strong { color:var(--ink); }
       footer { margin-top:56px; color:var(--muted); font-size:14px; }
     </style>
   </head>
@@ -68,7 +72,37 @@
         <p><strong>Launch guarantee:</strong> if the agreed acceptance test cannot be met within the fixed scope, you owe nothing.</p>
       </section>
 
-      <footer>Launch offer • Limited pilot availability • <a href="mailto:workflowrepairdesk@gmail.com" style="color:var(--accent)">workflowrepairdesk@gmail.com</a></footer>
+      <section class="evidence">
+        <div class="eyebrow">Inspect before you hire</div>
+        <h2>Working proof, not borrowed credibility.</h2>
+        <p class="lead">The public proof pack uses synthetic data and makes no client-results claim. You can inspect the workflow, run the tests, and see the exact evidence boundaries yourself.</p>
+        <div class="grid">
+          <article>
+            <h2>Run the tests</h2>
+            <p>Automated checks cover three routing scenarios and parity between the n8n Code node and its companion implementation.</p>
+            <a href="https://github.com/workflowrepairdesk/n8n-workflow-reliability-proof/actions/workflows/test.yml">View passing CI →</a>
+          </article>
+          <article>
+            <h2>Inspect the workflow</h2>
+            <p>Review the importable JSON, synthetic fixtures, visible rejection behavior, and documented limitations.</p>
+            <a href="https://github.com/workflowrepairdesk/n8n-workflow-reliability-proof/tree/main/lead-triage">Open lead-triage proof →</a>
+          </article>
+          <article>
+            <h2>Check delivery discipline</h2>
+            <p>See the acceptance-test, security, rollback, evidence, and handoff approach used for infrastructure work.</p>
+            <a href="https://github.com/workflowrepairdesk/n8n-workflow-reliability-proof/tree/main/openclaw-vps">Open VPS proof →</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="fit">
+        <h2>A good first project is small enough to verify.</h2>
+        <p><strong>Good fit:</strong> one unreliable n8n, webhook, API, spreadsheet, CRM, or browser-assisted workflow with a concrete expected result.</p>
+        <p><strong>Not a fit:</strong> an undefined platform rebuild, guaranteed revenue claim, or production access without agreed safety and approval boundaries.</p>
+        <a class="cta" href="mailto:workflowrepairdesk@gmail.com?subject=Automation%20Rescue%20scope&amp;body=Trigger%3A%0AExpected%20outcome%3A%0AWhat%20goes%20wrong%3A">Send the three-line scope</a>
+      </section>
+
+      <footer>Cameron • Workflow Repair Desk • Limited pilot availability • <a href="mailto:workflowrepairdesk@gmail.com" style="color:var(--accent)">workflowrepairdesk@gmail.com</a></footer>
     </main>
   </body>
 </html>
