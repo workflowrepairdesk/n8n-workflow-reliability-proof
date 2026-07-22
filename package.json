@@ -4,11 +4,10 @@
   "private": true,
   "description": "Reproducible Workflow Repair Desk demonstration assets",
   "scripts": {
-    "test": "node --test lead-triage/*.test.js"
+    "test": "node --test lead-triage/*.test.js site-content.test.js"
   },
   "license": "MIT",
   "engines": {
     "node": ">=20"
   }
 }
-

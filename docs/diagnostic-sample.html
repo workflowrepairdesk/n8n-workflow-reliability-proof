@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sample Automation Failure Diagnostic | Workflow Repair Desk</title>
+    <style>
+      :root { color-scheme:dark; --ink:#f4f7f5; --muted:#a9b5b0; --line:#2b3833; --accent:#68f7b1; --panel:#131b18; --warn:#ffd166; }
+      * { box-sizing:border-box; } body { margin:0; font:16px/1.65 ui-sans-serif,system-ui,sans-serif; color:var(--ink); background:#09100e; }
+      main { width:min(860px,calc(100% - 36px)); margin:auto; padding:48px 0 70px; } a { color:var(--accent); }
+      h1 { margin:.35em 0; font-size:clamp(34px,6vw,58px); line-height:1.08; letter-spacing:-.035em; } h2 { margin-top:42px; }
+      .disclosure { margin:22px 0 36px; padding:18px 20px; border:2px solid var(--warn); border-radius:10px; background:#211d10; }
+      .disclosure strong { display:block; color:var(--warn); font-size:17px; letter-spacing:.04em; text-transform:uppercase; }
+      .muted, li { color:var(--muted); } code, pre { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; }
+      pre { overflow:auto; padding:18px; border:1px solid var(--line); border-radius:8px; background:#050907; }
+      table { width:100%; border-collapse:collapse; } th, td { padding:12px; border:1px solid var(--line); text-align:left; vertical-align:top; } th { background:var(--panel); }
+      .cta { margin-top:44px; padding:25px; border-left:4px solid var(--accent); background:var(--panel); }
+    </style>
+  </head>
+  <body><main>
+    <a href="diagnostic.html">&larr; Automation Failure Diagnostic</a>
+    <h1>Sample automation failure diagnostic</h1>
+    <div class="disclosure"><strong>Sample &middot; self-directed &middot; non-production &middot; synthetic data only</strong>This sanitized sample reviews the public lead-triage demonstration in this repository. It is not client work, a production deployment, or evidence of production results. Observations come from source inspection and locally executed tests using synthetic fixtures.</div>
+    <h2>Executive summary</h2>
+    <p>The sample workflow correctly rejects a lead with no email, returns a visible correction route, and produces matching results in the companion JavaScript and the JavaScript embedded in its n8n Code node for the tested fixture.</p>
+    <p>The most important production-readiness issue is response semantics: the workflow is configured to return HTTP 200 even when its body says <code>ok: false</code>. A sender or monitor relying only on HTTP status could record invalid input as accepted. Before attaching a CRM or outbound action, the path would also need explicit input ranges, duplicate protection, and verification in the intended n8n runtime.</p>
+    <h2>Bounded scope</h2>
+    <p><strong>Synthetic webhook body &rarr; normalize and validate &rarr; score and route &rarr; JSON response</strong></p>
+    <p class="muted">Reviewed: the workflow JSON, companion JavaScript, behavioral tests, parity tests, and one local test run using synthetic fixtures. Excluded: n8n import or execution, credentials, live traffic, external writes, load or security testing, repair implementation, and business-performance claims.</p>
+    <h2>Acceptance test and observed result</h2>
+    <p>Given the synthetic input below, the implementation must return <code>ok: false</code>, route to <code>needs-correction</code>, include an actionable email error, and match the embedded Code-node result.</p>
+    <pre><code>{
+  "name": "No Email"
+}</code></pre>
+    <p>Observed synthetic result:</p>
+    <pre><code>{
+  "ok": false,
+  "route": "needs-correction",
+  "errors": ["a valid email is required"]
+}</code></pre>
+    <p><strong>Local test summary: 4 passed, 0 failed.</strong> This proves only the tested JavaScript behavior; it does not emulate n8n or demonstrate a production webhook.</p>
+    <h2>Ranked findings</h2>
+    <table><thead><tr><th>Priority</th><th>Finding</th><th>Recommended control</th></tr></thead><tbody>
+      <tr><td>High</td><td>Rejected input is configured to receive HTTP 200.</td><td>Agree and test a 4xx response or a documented body-aware caller contract.</td></tr>
+      <tr><td>High before writes</td><td>No idempotency or duplicate control exists.</td><td>Define a stable event key and test the same accepted event twice.</td></tr>
+      <tr><td>Medium</td><td>Numeric fields are coerced but not range-validated.</td><td>Reject or normalize values outside agreed integer ranges.</td></tr>
+      <tr><td>Medium</td><td>The routing threshold boundary is not directly tested.</td><td>Add fixtures immediately below and at the threshold.</td></tr>
+      <tr><td>Release blocker</td><td>Behavior in the target n8n runtime is unverified.</td><td>Import and execute valid and invalid fixtures in the intended n8n version.</td></tr>
+    </tbody></table>
+    <p class="muted">The HTTP-status finding is directly observable in the artifact. The others are risks inferred through source review, not claims that a production incident occurred.</p>
+    <h2>Smallest credible repair</h2>
+    <p>Starting at <strong>USD 250</strong>: agree the invalid-input contract; add appropriate status behavior and numeric range validation; test valid input, invalid email, and the routing boundary; then deliver the updated artifact, test evidence, known gaps, and handoff notes. Final scope and price are confirmed in writing first.</p>
+    <section class="cta"><h2>Apply this format to one failing path</h2><p>The fixed diagnostic is <strong>USD 125</strong>, credited in full toward an agreed <strong>USD 250+ repair</strong> on the same path.</p><p><a href="mailto:workflowrepairdesk@gmail.com?subject=Automation%20Failure%20Diagnostic&amp;body=Trigger%3A%0AExpected%20result%3A%0AWhat%20goes%20wrong%3A%0ASanitized%20evidence%20available%3A"><strong>Request a written scope &rarr;</strong></a></p><p class="muted">Do not send credentials or customer data. No production action is performed during the diagnostic.</p></section>
+  </main></body>
+</html>

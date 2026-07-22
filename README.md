@@ -10,6 +10,8 @@
 
 ## Verify it in 60 seconds
 
+Considering a repair but not ready to authorize implementation? Review the [USD 125 Automation Failure Diagnostic](https://workflowrepairdesk.github.io/n8n-workflow-reliability-proof/diagnostic.html) and its prominently labeled, self-directed synthetic sample. The diagnostic fee is credited in full toward an agreed USD 250+ repair on the same path.
+
 Prerequisite: Node.js 20 or newer. There are no package dependencies or credentials to install.
 
 ```bash
