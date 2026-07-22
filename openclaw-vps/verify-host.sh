@@ -2,7 +2,9 @@
 set -u
 
 # Read-only evidence collector for an Ubuntu 24.04 OpenClaw host.
-# It prints configuration posture, never secret values.
+# It avoids credential-file contents and service-log contents. Operational
+# commands may still reveal hostnames, account labels, paths, ports, or other
+# environment details; review the output before sharing it outside the team.
 
 section() { printf '\n## %s\n' "$1"; }
 
@@ -52,5 +54,9 @@ find "$HOME/.openclaw" -maxdepth 3 -type f \
   \( -name '*.env' -o -name 'auth-profiles.json' -o -name 'openclaw.json' \) \
   -printf '%m %u:%g %p\n' 2>/dev/null || true
 
-section "Recent service logs"
-journalctl --user -u openclaw-gateway.service -n 50 --no-pager 2>/dev/null || true
+section "Log access check (contents intentionally omitted)"
+if journalctl --user -u openclaw-gateway.service -n 1 --no-pager >/dev/null 2>&1; then
+  printf '%s\n' 'gateway journal is readable; inspect privately and redact before sharing'
+else
+  printf '%s\n' 'gateway journal was not readable in this session'
+fi

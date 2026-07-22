@@ -16,7 +16,7 @@ This package shows how Workflow Repair Desk would turn a fresh Ubuntu 24.04 VPS 
 ## Contents
 
 - `RUNBOOK.md` — staged installation, hardening, verification, and rollback plan
-- `verify-host.sh` — read-only evidence collector that deliberately avoids printing secret values
+- `verify-host.sh` — read-only evidence collector that omits credential-file and service-log contents; operational metadata still requires review before sharing
 - `openclaw-gateway-override.conf` — minimal systemd user-service override
 - `TELEGRAM_PHOTO_DESIGN.md` — answer to the buyer's photo-to-job-record design question
 
@@ -35,4 +35,3 @@ The trial passes when:
 ## Source basis
 
 The approach follows the installed OpenClaw documentation for Linux servers, Linux systemd services, and VPS deployment. Host firewall, SSH, updates, CrowdSec, and Netdata remain operating-system responsibilities rather than OpenClaw features.
-
