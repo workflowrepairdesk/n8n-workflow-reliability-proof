@@ -11,6 +11,10 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /credited in full/i);
   assert.match(html, /USD 250 or more/);
   assert.match(html, /one bounded automation path/i);
+  assert.match(html, /Before you pay/i);
+  assert.match(html, /Good fit/i);
+  assert.match(html, /Not a fit/i);
+  assert.match(html, /say so before accepting the diagnostic/i);
   assert.match(html, /mailto:workflowrepairdesk@gmail\.com/);
   assert.match(html, /href="diagnostic-sample\.html"/);
 });
