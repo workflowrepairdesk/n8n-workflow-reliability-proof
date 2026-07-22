@@ -18,6 +18,11 @@
       .price { margin:26px 0; font-size:36px; font-weight:850; }
       .price small { display:block; color:var(--muted); font-size:15px; font-weight:500; }
       .cta { display:inline-block; margin:10px 0 40px; padding:13px 19px; border-radius:8px; color:#07110d; background:var(--accent); font-weight:800; text-decoration:none; }
+      .actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:20px 0 12px; }
+      .actions .cta { margin:0; }
+      .secondary { display:inline-block; padding:12px 18px; border:1px solid var(--accent); border-radius:8px; font-weight:800; text-decoration:none; }
+      .cta-note { max-width:700px; margin:0 0 22px; color:var(--muted); font-size:14px; }
+      .proof-strip { margin:0 0 40px; padding:12px 16px; border:1px solid var(--line); border-radius:8px; color:var(--muted); background:var(--panel); font-size:14px; }
       .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:16px; margin-top:34px; }
       article, .boundary { padding:24px; border:1px solid var(--line); border-radius:12px; background:var(--panel); }
       ul { padding-left:20px; color:var(--muted); }
@@ -34,7 +39,12 @@
       <h1>Find the failure before paying for the repair.</h1>
       <p class="lead">I inspect one bounded automation path and return an evidence-linked diagnostic: what is observed, what remains uncertain, and the smallest credible repair options.</p>
       <div class="price">USD 125 <small>Credited in full toward an agreed repair of USD 250 or more on the same diagnosed path.</small></div>
-      <a class="cta" href="mailto:workflowrepairdesk@gmail.com?subject=Automation%20Failure%20Diagnostic&amp;body=Trigger%3A%0AExpected%20result%3A%0AWhat%20goes%20wrong%3A%0ASanitized%20evidence%20available%3A">Request a written scope</a>
+      <div class="actions">
+        <a class="cta" href="mailto:workflowrepairdesk@gmail.com?subject=Automation%20Failure%20Diagnostic&amp;body=Trigger%3A%0AExpected%20result%3A%0AWhat%20goes%20wrong%3A%0ASanitized%20evidence%20available%3A">Get a free fit check</a>
+        <a class="secondary" href="diagnostic-sample.html">See exactly what the report looks like &rarr;</a>
+      </div>
+      <p class="cta-note">The fit check is free. No call, login, credentials, or attachment required&mdash;just four lines. Payment is requested only after you approve the written scope. If the email button does not open, write to <a href="mailto:workflowrepairdesk@gmail.com">workflowrepairdesk@gmail.com</a>.</p>
+      <p class="proof-strip"><strong>Public synthetic sample</strong> &middot; 4 tests passed &middot; 5 ranked findings &middot; limitations stated plainly</p>
       <section class="grid" aria-label="Diagnostic scope">
         <article><h2>What you receive</h2><ul><li>A concise map of the agreed workflow path</li><li>One written acceptance test</li><li>Evidence-supported findings ranked by operational risk</li><li>Repair options, dependencies, known gaps, and a quote when scope is clear</li></ul></article>
         <article><h2>What you provide</h2><ul><li>The trigger, expected result, and observed failure</li><li>A redacted export or screenshots, if available</li><li>One sanitized failing example and relevant error text</li><li>Platform and version details</li></ul></article>

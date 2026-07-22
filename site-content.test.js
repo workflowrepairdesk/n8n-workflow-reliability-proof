@@ -15,8 +15,16 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /Good fit/i);
   assert.match(html, /Not a fit/i);
   assert.match(html, /say so before accepting the diagnostic/i);
+  assert.match(html, /Get a free fit check/i);
+  assert.match(html, /fit check is free/i);
+  assert.match(html, /No call, login, credentials, or attachment required/i);
+  assert.match(html, /Payment is requested only after you approve/i);
+  assert.match(html, /Public synthetic sample/i);
+  assert.match(html, /4 tests passed/i);
+  assert.match(html, /5 ranked findings/i);
   assert.match(html, /mailto:workflowrepairdesk@gmail\.com/);
   assert.match(html, /href="diagnostic-sample\.html"/);
+  assert.ok(html.indexOf('href="diagnostic-sample.html"') < html.indexOf('<section class="grid"'));
 });
 
 test('sample prominently preserves synthetic evidence boundaries', () => {
