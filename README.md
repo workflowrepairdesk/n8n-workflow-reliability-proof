@@ -20,7 +20,7 @@ cd n8n-workflow-reliability-proof
 npm test
 ```
 
-Expected result: four passing test entries. The behavioral test entry checks three routing scenarios; three parity entries prove that the JavaScript embedded in the n8n Code node produces the same outputs as the companion Node implementation.
+Expected result: every test entry passes. The suite includes one behavioral entry covering three routing scenarios, three parity entries proving that the JavaScript embedded in the n8n Code node produces the same outputs as the companion Node implementation, and two buyer-page evidence checks.
 
 | Inspectable evidence | What it proves | What it does not claim |
 | --- | --- | --- |
