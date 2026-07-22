@@ -1,0 +1,73 @@
+{
+  "name": "Agency Lead Intake - Normalize, Validate, Score, Route",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agency-lead-triage-demo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "id": "3f47b60b-9ba7-4b31-a4d6-5a449d8dc151",
+      "name": "Receive Lead",
+      "webhookId": "430c787f-3936-4805-92f4-19dfcf70c6ea"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json.body ?? $json;\nconst clean = (value) => typeof value === 'string' ? value.trim() : '';\nconst lead = { name: clean(input.name), email: clean(input.email).toLowerCase(), company: clean(input.company), teamSize: Number(input.teamSize) || 0, monthlyLeads: Number(input.monthlyLeads) || 0, pain: clean(input.pain) };\nconst errors = [];\nif (!lead.name) errors.push('name is required');\nif (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(lead.email)) errors.push('a valid email is required');\nif (errors.length) return [{ json: { ok: false, route: 'needs-correction', errors } }];\nlet score = 0;\nconst reasons = [];\nif (lead.company) { score += 15; reasons.push('company identified'); }\nif (lead.teamSize >= 2 && lead.teamSize <= 30) { score += 20; reasons.push('team matches initial customer profile'); }\nif (lead.monthlyLeads >= 50) { score += 25; reasons.push('lead volume makes response automation valuable'); }\nif (/manual|copy|spreadsheet|delay|wait|miss|duplicate|fail|break/i.test(lead.pain)) { score += 30; reasons.push('concrete automation pain detected'); }\nif (lead.pain.length >= 40) { score += 10; reasons.push('problem includes useful detail'); }\nreturn [{ json: { ok: true, lead, score, route: score >= 60 ? 'priority-review' : 'standard-review', reasons } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0],
+      "id": "c32ce730-6042-40bc-817a-61129038162b",
+      "name": "Validate and Triage"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [520, 0],
+      "id": "3e018dac-f93f-47c5-80e6-9b645c625693",
+      "name": "Return Triage Result"
+    },
+    {
+      "parameters": {
+        "content": "## Safe demo boundary\nThis workflow validates and scores an inbound lead, then returns a route. It does not send messages or write to external systems. Client builds add approved destinations and credentials inside the client's n8n environment.",
+        "height": 220,
+        "width": 420
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -300],
+      "id": "25991903-8818-4d52-9910-4863c6c6764f",
+      "name": "Demo Notes"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive Lead": {
+      "main": [[{ "node": "Validate and Triage", "type": "main", "index": 0 }]]
+    },
+    "Validate and Triage": {
+      "main": [[{ "node": "Return Triage Result", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d5c4c901-e943-4763-8692-a18d2af4279c",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
