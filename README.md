@@ -15,6 +15,8 @@ Status: self-directed technical proof. These files are not represented as client
 
 ## Contents
 
+- [`CAPABILITY.md`](CAPABILITY.md) — concise scope, evidence, delivery method, and commercial starting point
+
 ### `lead-triage/`
 
 A small lead-intake routing example with an n8n workflow JSON, companion Node implementation, and automated tests. The repository tests the Node implementation and parity-checks the JavaScript embedded in the workflow JSON. It does not claim a live CRM integration or production deployment.
@@ -39,4 +41,3 @@ For a paid engagement, the acceptance test is agreed before implementation. Cred
 
 Workflow Repair Desk  
 `workflowrepairdesk@gmail.com`
-
