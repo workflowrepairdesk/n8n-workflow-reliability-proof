@@ -44,6 +44,12 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /Nothing is uploaded or submitted/i);
   assert.match(html, /copyButton\.disabled = !ready/i);
   assert.match(html, /intakeInputs\.failure\.value = preset\.dataset\.failure/i);
+  assert.match(html, /Your draft survives a refresh in this tab/i);
+  assert.match(html, /sessionStorage\.setItem\(intakeDraftKey/i);
+  assert.match(html, /restoreIntakeDraft\(\)/i);
+  assert.match(html, /Draft restored after refresh/i);
+  assert.match(html, /Clear this draft/i);
+  assert.match(html, /sessionStorage\.removeItem\(intakeDraftKey\)/i);
   assert.match(html, /navigator\.clipboard\.writeText/);
   assert.match(html, /Sanitized evidence available:/i);
   assert.match(html, /Keep names, customer data, credentials, and production logs out/i);

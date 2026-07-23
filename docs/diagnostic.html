@@ -74,6 +74,8 @@
       .copy-action:hover, .copy-action:focus-visible { color:#07110d; background:var(--accent); }
       .copy-action:disabled { border-color:var(--line); color:var(--muted); cursor:not-allowed; }
       .copy-action:disabled:hover { color:var(--muted); background:transparent; }
+      .clear-action { margin-left:8px; padding:10px 14px; border:1px solid var(--line); border-radius:8px; color:var(--muted); background:transparent; font:inherit; font-weight:750; cursor:pointer; }
+      .clear-action:hover, .clear-action:focus-visible { border-color:var(--accent); color:var(--ink); }
       .copy-status { display:inline-block; margin-left:10px; color:var(--muted); font-size:14px; }
       .fit-check { display:grid; gap:10px; margin:18px 0; }
       .fit-check label { display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border:1px solid var(--line); border-radius:8px; background:#0b1411; cursor:pointer; }
@@ -142,11 +144,13 @@
           </label>
         </div>
         <p class="intake-progress" id="intake-progress" data-state="incomplete" role="status" aria-live="polite">0 of 4 intake fields complete. Nothing is uploaded or submitted.</p>
+        <p class="cta-note" id="draft-status" role="status" aria-live="polite">Your draft survives a refresh in this tab and clears when the tab closes. It is not uploaded.</p>
         <div class="copy-box" id="diagnostic-intake" role="group" aria-label="Copy-paste diagnostic intake template">Trigger:
 Expected result:
 What goes wrong:
 Sanitized evidence available:</div>
         <button class="copy-action" id="copy-intake" type="button" disabled>Copy complete four-line intake</button>
+        <button class="clear-action" id="clear-intake" type="button">Clear this draft</button>
         <span class="copy-status" id="copy-status" role="status" aria-live="polite"></span>
       </section>
       <section class="boundary">
@@ -177,7 +181,9 @@ Sanitized evidence available:</div>
     </main>
     <script>
       const copyButton = document.getElementById('copy-intake');
+      const clearButton = document.getElementById('clear-intake');
       const copyStatus = document.getElementById('copy-status');
+      const draftStatus = document.getElementById('draft-status');
       const intake = document.getElementById('diagnostic-intake');
       const failurePresets = [...document.querySelectorAll('.failure-preset')];
       const inspectionPreview = document.getElementById('inspection-preview');
@@ -190,6 +196,7 @@ Sanitized evidence available:</div>
       const intakeProgress = document.getElementById('intake-progress');
       const fitInputs = [...document.querySelectorAll('[data-fit]')];
       const fitResult = document.getElementById('fit-result');
+      const intakeDraftKey = 'workflow-repair-diagnostic-intake';
 
       const fitGuidance = {
         'one-path': 'Narrow the request to one trigger, one essential decision or transformation, and one expected result.',
@@ -232,10 +239,33 @@ Sanitized evidence available: ${values.evidence}`;
         intakeProgress.textContent = ready
           ? '4 of 4 intake fields complete. Ready to copy; nothing has been uploaded or submitted.'
           : `${completeCount} of 4 intake fields complete. Nothing is uploaded or submitted.`;
+        try {
+          if (completeCount > 0) {
+            sessionStorage.setItem(intakeDraftKey, JSON.stringify(values));
+          } else {
+            sessionStorage.removeItem(intakeDraftKey);
+          }
+        } catch {
+          draftStatus.textContent = 'Browser-local draft saving is unavailable; copy your intake before leaving this page.';
+        }
         copyStatus.textContent = '';
       };
 
       Object.values(intakeInputs).forEach((input) => input.addEventListener('input', updateIntake));
+
+      const restoreIntakeDraft = () => {
+        try {
+          const saved = JSON.parse(sessionStorage.getItem(intakeDraftKey));
+          if (!saved || typeof saved !== 'object') return;
+          Object.entries(intakeInputs).forEach(([key, input]) => {
+            if (typeof saved[key] === 'string') input.value = saved[key];
+          });
+          updateIntake();
+          draftStatus.textContent = 'Draft restored after refresh. It remains only in this tab and clears when the tab closes.';
+        } catch {
+          sessionStorage.removeItem(intakeDraftKey);
+        }
+      };
 
       failurePresets.forEach((preset) => {
         preset.addEventListener('click', () => {
@@ -267,6 +297,19 @@ Sanitized evidence available: ${values.evidence}`;
           copyStatus.textContent = copied ? 'Copied.' : 'Select the template above to copy it.';
         }
       });
+
+      clearButton.addEventListener('click', () => {
+        Object.values(intakeInputs).forEach((input) => {
+          input.value = '';
+        });
+        failurePresets.forEach((button) => button.setAttribute('aria-pressed', 'false'));
+        inspectionPreview.dataset.state = 'empty';
+        inspectionPreview.innerHTML = '<strong>What the diagnostic would inspect</strong>Choose a symptom to see the matching evidence plan. This preview is general, not a finding about your workflow.';
+        updateIntake();
+        draftStatus.textContent = 'Draft cleared from this tab.';
+      });
+
+      restoreIntakeDraft();
     </script>
   </body>
 </html>
