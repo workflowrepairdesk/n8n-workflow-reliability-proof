@@ -7,6 +7,11 @@ const page = (name) => readFileSync(join(__dirname, 'docs', name), 'utf8');
 
 test('diagnostic offer states price, repair credit, scope, and contact path', () => {
   const html = page('diagnostic.html');
+  assert.match(html, /<title>n8n, Webhook &amp; API Failure Diagnostic/i);
+  assert.match(html, /<link rel="canonical" href="https:\/\/workflowrepairdesk\.github\.io\/n8n-workflow-reliability-proof\/diagnostic\.html">/i);
+  assert.match(html, /property="og:title" content="n8n, Webhook &amp; API Failure Diagnostic"/i);
+  assert.match(html, /name="twitter:title" content="n8n, Webhook &amp; API Failure Diagnostic"/i);
+  assert.match(html, /duplicate actions, silent stops, bad routing, mapping errors, retries, or timeouts/i);
   assert.match(html, /USD 125/);
   assert.match(html, /credited in full/i);
   assert.match(html, /USD 250 or more/);
@@ -45,6 +50,19 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /mailto:workflowrepairdesk@gmail\.com/);
   assert.match(html, /href="diagnostic-sample\.html"/);
   assert.ok(html.indexOf('href="diagnostic-sample.html"') < html.indexOf('<section class="grid"'));
+});
+
+test('diagnostic publishes valid service offer structured data', () => {
+  const html = page('diagnostic.html');
+  const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  assert.ok(match, 'structured data block is present');
+  const data = JSON.parse(match[1]);
+  assert.equal(data['@type'], 'Service');
+  assert.equal(data.name, 'n8n, Webhook and API Failure Diagnostic');
+  assert.equal(data.offers['@type'], 'Offer');
+  assert.equal(data.offers.price, '125');
+  assert.equal(data.offers.priceCurrency, 'USD');
+  assert.match(data.description, /n8n, webhook, or API path/i);
 });
 
 test('sample prominently preserves synthetic evidence boundaries', () => {
