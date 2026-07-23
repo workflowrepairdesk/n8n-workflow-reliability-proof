@@ -61,8 +61,16 @@
       .failure-presets { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 4px; }
       .failure-preset { padding:9px 12px; border:1px solid var(--line); border-radius:999px; color:var(--ink); background:#0b1411; font:inherit; cursor:pointer; }
       .failure-preset:hover, .failure-preset:focus-visible, .failure-preset[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); }
+      .intake-fields { display:grid; gap:12px; margin-top:18px; }
+      .intake-fields label { display:grid; gap:6px; color:var(--ink); font-weight:750; }
+      .intake-fields input { width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:8px; color:var(--ink); background:#0b1411; font:inherit; }
+      .intake-fields input:focus { border-color:var(--accent); outline:2px solid transparent; }
+      .intake-progress { margin:12px 0 0; color:var(--muted); font-size:14px; }
+      .intake-progress[data-state="ready"] { color:var(--accent); }
       .copy-action { margin-top:12px; padding:10px 14px; border:1px solid var(--accent); border-radius:8px; color:var(--accent); background:transparent; font:inherit; font-weight:800; cursor:pointer; }
       .copy-action:hover, .copy-action:focus-visible { color:#07110d; background:var(--accent); }
+      .copy-action:disabled { border-color:var(--line); color:var(--muted); cursor:not-allowed; }
+      .copy-action:disabled:hover { color:var(--muted); background:transparent; }
       .copy-status { display:inline-block; margin-left:10px; color:var(--muted); font-size:14px; }
       .fit-check { display:grid; gap:10px; margin:18px 0; }
       .fit-check label { display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border:1px solid var(--line); border-radius:8px; background:#0b1411; cursor:pointer; }
@@ -112,11 +120,26 @@
           <button class="failure-preset" type="button" data-failure="The workflow stops without a usable downstream result" aria-pressed="false">Silent stop</button>
           <button class="failure-preset" type="button" data-failure="Data is routed to the wrong field or destination" aria-pressed="false">Wrong routing or mapping</button>
         </div>
+        <div class="intake-fields" aria-label="Browser-local diagnostic intake builder">
+          <label>Trigger
+            <input id="intake-trigger" type="text" autocomplete="off" placeholder="Example: a webhook receives a paid order">
+          </label>
+          <label>Expected result
+            <input id="intake-expected" type="text" autocomplete="off" placeholder="Example: create exactly one CRM record">
+          </label>
+          <label>What goes wrong
+            <input id="intake-failure" type="text" autocomplete="off" placeholder="Choose a pattern above or describe the symptom">
+          </label>
+          <label>Sanitized evidence available
+            <input id="intake-evidence" type="text" autocomplete="off" placeholder="Example: redacted export and one synthetic payload">
+          </label>
+        </div>
+        <p class="intake-progress" id="intake-progress" data-state="incomplete" role="status" aria-live="polite">0 of 4 intake fields complete. Nothing is uploaded or submitted.</p>
         <div class="copy-box" id="diagnostic-intake" role="group" aria-label="Copy-paste diagnostic intake template">Trigger:
 Expected result:
 What goes wrong:
 Sanitized evidence available:</div>
-        <button class="copy-action" id="copy-intake" type="button">Copy four-line intake</button>
+        <button class="copy-action" id="copy-intake" type="button" disabled>Copy complete four-line intake</button>
         <span class="copy-status" id="copy-status" role="status" aria-live="polite"></span>
       </section>
       <section class="boundary">
@@ -141,6 +164,13 @@ Sanitized evidence available:</div>
       const copyStatus = document.getElementById('copy-status');
       const intake = document.getElementById('diagnostic-intake');
       const failurePresets = [...document.querySelectorAll('.failure-preset')];
+      const intakeInputs = {
+        trigger: document.getElementById('intake-trigger'),
+        expected: document.getElementById('intake-expected'),
+        failure: document.getElementById('intake-failure'),
+        evidence: document.getElementById('intake-evidence')
+      };
+      const intakeProgress = document.getElementById('intake-progress');
       const fitInputs = [...document.querySelectorAll('[data-fit]')];
       const fitResult = document.getElementById('fit-result');
 
@@ -170,14 +200,32 @@ Sanitized evidence available:</div>
 
       fitInputs.forEach((input) => input.addEventListener('change', updateFitResult));
 
+      const updateIntake = () => {
+        const values = Object.fromEntries(
+          Object.entries(intakeInputs).map(([key, input]) => [key, input.value.trim()])
+        );
+        intake.textContent = `Trigger: ${values.trigger}
+Expected result: ${values.expected}
+What goes wrong: ${values.failure}
+Sanitized evidence available: ${values.evidence}`;
+        const completeCount = Object.values(values).filter(Boolean).length;
+        const ready = completeCount === Object.keys(intakeInputs).length;
+        copyButton.disabled = !ready;
+        intakeProgress.dataset.state = ready ? 'ready' : 'incomplete';
+        intakeProgress.textContent = ready
+          ? '4 of 4 intake fields complete. Ready to copy; nothing has been uploaded or submitted.'
+          : `${completeCount} of 4 intake fields complete. Nothing is uploaded or submitted.`;
+        copyStatus.textContent = '';
+      };
+
+      Object.values(intakeInputs).forEach((input) => input.addEventListener('input', updateIntake));
+
       failurePresets.forEach((preset) => {
         preset.addEventListener('click', () => {
           failurePresets.forEach((button) => button.setAttribute('aria-pressed', 'false'));
           preset.setAttribute('aria-pressed', 'true');
-          intake.textContent = `Trigger:
-Expected result:
-What goes wrong: ${preset.dataset.failure}
-Sanitized evidence available:`;
+          intakeInputs.failure.value = preset.dataset.failure;
+          updateIntake();
           copyStatus.textContent = 'Failure pattern added.';
         });
       });
