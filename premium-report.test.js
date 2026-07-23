@@ -11,6 +11,7 @@ const {
   createInactiveEntitlementAdapter
 } = require('./docs/premium-report.js');
 const { createDemoEntitlementAdapter } = require('./test-support/demo-entitlement-adapter.js');
+const labeledCorpus = require('./preflight-corpus.js');
 
 const now = new Date('2026-07-23T03:00:00.000Z');
 const paid = (id = 'ent_test_1') => ({
@@ -142,6 +143,57 @@ test('ten labeled synthetic workflows produce exact expected premium rule status
     const finding = output.report.findings.find((item) => item.id === ruleId);
     assert.equal(finding.status, status, `${label}: ${ruleId} status`);
     assert.equal(finding.count, count, `${label}: ${ruleId} count`);
+  }
+});
+
+test('all labeled corpus reports are priority ordered, contract shaped, and source-value free', async () => {
+  const records = Object.fromEntries(
+    labeledCorpus.map((fixtureCase, index) => [`corpus-${index}`, paid(`ent-labeled-${index}`)])
+  );
+  const service = serviceFor(records);
+  const rank = { fail: 0, warn: 1, pass: 2 };
+  const severity = { high: 0, medium: 1, low: 2 };
+
+  for (const [index, fixtureCase] of labeledCorpus.entries()) {
+    const output = await service.generate(fixtureCase.workflow, `corpus-${index}`);
+    const report = output.report;
+    assert.deepEqual(
+      Object.keys(report).sort(),
+      ['analysisFingerprint', 'findings', 'generatedAt', 'limitations', 'nextSteps', 'overview', 'privacy', 'product', 'report', 'scannerVersion', 'schemaVersion'].sort(),
+      `${fixtureCase.label}: top-level report contract`
+    );
+    assert.equal(report.schemaVersion, 1, fixtureCase.label);
+    assert.equal(report.findings.length, 12, fixtureCase.label);
+    assert.deepEqual(
+      report.overview.prioritizedFindingIds,
+      report.findings.filter((finding) => finding.status !== 'pass').map((finding) => finding.id),
+      `${fixtureCase.label}: ranked action list matches visible finding order`
+    );
+
+    for (let findingIndex = 1; findingIndex < report.findings.length; findingIndex += 1) {
+      const left = report.findings[findingIndex - 1];
+      const right = report.findings[findingIndex];
+      const comparison = rank[left.status] - rank[right.status]
+        || severity[left.severity] - severity[right.severity]
+        || left.id.localeCompare(right.id);
+      assert.ok(comparison <= 0, `${fixtureCase.label}: findings are deterministically priority ordered`);
+    }
+
+    const artifacts = `${output.json}\n${output.html}`;
+    const sourceStrings = [];
+    const collectStrings = (value) => {
+      if (typeof value === 'string') sourceStrings.push(value);
+      else if (Array.isArray(value)) value.forEach(collectStrings);
+      else if (value && typeof value === 'object') Object.values(value).forEach(collectStrings);
+    };
+    collectStrings(fixtureCase.workflow);
+    for (const sourceValue of new Set(sourceStrings.filter((value) => value.length >= 5))) {
+      assert.equal(
+        artifacts.includes(sourceValue),
+        false,
+        `${fixtureCase.label}: artifact leaked source value ${sourceValue}`
+      );
+    }
   }
 });
 

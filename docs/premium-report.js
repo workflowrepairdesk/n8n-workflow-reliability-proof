@@ -129,6 +129,13 @@
 
   function buildDerivedReport(analysis, generatedAt) {
     const safe = safeAnalysisShape(analysis);
+    const priority = { fail: 0, warn: 1, pass: 2 };
+    const severity = { high: 0, medium: 1, low: 2 };
+    const compareFindings = (left, right) => (
+      priority[left.status] - priority[right.status]
+      || severity[left.severity] - severity[right.severity]
+      || left.id.localeCompare(right.id)
+    );
     const findings = analysis.checks.map((check) => {
       const rule = guidance[check.id];
       if (!rule) throw new PremiumReportError('UNKNOWN_RULE', 'The scanner returned an unsupported rule.');
@@ -141,12 +148,9 @@
         evidenceClass: rule[0],
         recommendation: rule[1]
       };
-    });
-    const priority = { fail: 0, warn: 1, pass: 2 };
-    const severity = { high: 0, medium: 1, low: 2 };
+    }).sort(compareFindings);
     const prioritized = findings
       .filter((finding) => finding.status !== 'pass')
-      .sort((left, right) => priority[left.status] - priority[right.status] || severity[left.severity] - severity[right.severity])
       .map((finding) => finding.id);
 
     return {
