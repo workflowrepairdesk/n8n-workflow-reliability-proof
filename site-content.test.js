@@ -18,6 +18,9 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /Get a free fit check/i);
   assert.match(html, /fit check is free/i);
   assert.match(html, /No call, login, credentials, or attachment required/i);
+  assert.match(html, /Copy-paste intake/i);
+  assert.match(html, /Sanitized evidence available:/i);
+  assert.match(html, /Keep names, customer data, credentials, and production logs out/i);
   assert.match(html, /Payment is requested only after you approve/i);
   assert.match(html, /Public synthetic sample/i);
   assert.match(html, /4 tests passed/i);

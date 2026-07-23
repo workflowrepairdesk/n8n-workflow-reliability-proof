@@ -29,6 +29,7 @@
       .sample { margin-top:42px; padding:28px; border-left:4px solid var(--accent); background:var(--panel); }
       .label { display:inline-block; padding:4px 8px; border:1px solid var(--accent); border-radius:5px; color:var(--accent); font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
       .boundary { margin-top:42px; }
+      .copy-box { margin:16px 0 0; padding:18px; border:1px dashed var(--accent); border-radius:8px; color:var(--ink); background:#0b1411; white-space:pre-wrap; font:15px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace; }
       footer { margin-top:52px; color:var(--muted); font-size:14px; }
     </style>
   </head>
@@ -50,6 +51,14 @@
         <article><h2>What you provide</h2><ul><li>The trigger, expected result, and observed failure</li><li>A redacted export or screenshots, if available</li><li>One sanitized failing example and relevant error text</li><li>Platform and version details</li></ul></article>
         <article><h2>Good fit</h2><ul><li>One workflow or bounded execution path</li><li>Intermittent failures, duplicate actions, bad routing, timeouts, or unclear error handling</li><li>A buyer who wants written evidence before authorizing a change</li><li>A sanitized export or enough observations to define the diagnostic boundary</li></ul></article>
         <article><h2>Not a fit</h2><ul><li>An emergency production incident that needs immediate hands-on response</li><li>A full system rebuild disguised as a one-path review</li><li>Work that requires credentials, unrestricted production access, or unsupported outcome guarantees</li><li>Security testing without explicit written authorization and a separate scope</li></ul></article>
+      </section>
+      <section class="boundary">
+        <h2>Copy-paste intake</h2>
+        <p>If the request button does not work, copy these four lines into an email. Keep names, customer data, credentials, and production logs out of the first message.</p>
+        <div class="copy-box" role="group" aria-label="Copy-paste diagnostic intake template">Trigger:
+Expected result:
+What goes wrong:
+Sanitized evidence available:</div>
       </section>
       <section class="boundary">
         <h2>Before you pay</h2>
