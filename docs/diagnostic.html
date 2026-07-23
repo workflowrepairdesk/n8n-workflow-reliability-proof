@@ -36,6 +36,12 @@
       .copy-action { margin-top:12px; padding:10px 14px; border:1px solid var(--accent); border-radius:8px; color:var(--accent); background:transparent; font:inherit; font-weight:800; cursor:pointer; }
       .copy-action:hover, .copy-action:focus-visible { color:#07110d; background:var(--accent); }
       .copy-status { display:inline-block; margin-left:10px; color:var(--muted); font-size:14px; }
+      .fit-check { display:grid; gap:10px; margin:18px 0; }
+      .fit-check label { display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border:1px solid var(--line); border-radius:8px; background:#0b1411; cursor:pointer; }
+      .fit-check input { margin-top:6px; accent-color:var(--accent); }
+      .fit-result { padding:14px 16px; border-left:4px solid var(--line); border-radius:6px; color:var(--muted); background:#0b1411; }
+      .fit-result[data-state="ready"] { border-color:var(--accent); color:var(--ink); }
+      .fit-result[data-state="blocked"] { border-color:#ffb36b; color:var(--ink); }
       footer { margin-top:52px; color:var(--muted); font-size:14px; }
     </style>
   </head>
@@ -57,6 +63,17 @@
         <article><h2>What you provide</h2><ul><li>The trigger, expected result, and observed failure</li><li>A redacted export or screenshots, if available</li><li>One sanitized failing example and relevant error text</li><li>Platform and version details</li></ul></article>
         <article><h2>Good fit</h2><ul><li>One workflow or bounded execution path</li><li>Intermittent failures, duplicate actions, bad routing, timeouts, or unclear error handling</li><li>A buyer who wants written evidence before authorizing a change</li><li>A sanitized export or enough observations to define the diagnostic boundary</li></ul></article>
         <article><h2>Not a fit</h2><ul><li>An emergency production incident that needs immediate hands-on response</li><li>A full system rebuild disguised as a one-path review</li><li>Work that requires credentials, unrestricted production access, or unsupported outcome guarantees</li><li>Security testing without explicit written authorization and a separate scope</li></ul></article>
+      </section>
+      <section class="boundary">
+        <h2>60-second scope-fit check</h2>
+        <p>Check every statement that is true. This does not submit anything or share workflow data.</p>
+        <div class="fit-check" id="fit-check">
+          <label><input type="checkbox" data-fit="one-path"> I can isolate one trigger-to-result path.</label>
+          <label><input type="checkbox" data-fit="expected-actual"> I can describe the expected result and what happens instead.</label>
+          <label><input type="checkbox" data-fit="sanitized-evidence"> I can provide sanitized evidence or concrete observations without credentials or customer data.</label>
+          <label><input type="checkbox" data-fit="not-emergency"> This is not an emergency incident and does not require immediate production changes.</label>
+        </div>
+        <p class="fit-result" id="fit-result" data-state="incomplete" role="status" aria-live="polite">Check the statements above for a scope-fit result.</p>
       </section>
       <section class="boundary">
         <h2>Copy-paste intake</h2>
@@ -96,6 +113,34 @@ Sanitized evidence available:</div>
       const copyStatus = document.getElementById('copy-status');
       const intake = document.getElementById('diagnostic-intake');
       const failurePresets = [...document.querySelectorAll('.failure-preset')];
+      const fitInputs = [...document.querySelectorAll('[data-fit]')];
+      const fitResult = document.getElementById('fit-result');
+
+      const fitGuidance = {
+        'one-path': 'Narrow the request to one trigger, one essential decision or transformation, and one expected result.',
+        'expected-actual': 'Write one sentence for the expected result and one for the observed failure.',
+        'sanitized-evidence': 'Gather a redacted export, screenshot, error text, or concrete observation before paying for a diagnostic.',
+        'not-emergency': 'This fixed diagnostic is not incident response; use an authorized emergency support path instead.'
+      };
+
+      const updateFitResult = () => {
+        const missing = fitInputs.filter((input) => !input.checked).map((input) => input.dataset.fit);
+        if (missing.length === 0) {
+          fitResult.dataset.state = 'ready';
+          fitResult.textContent = 'Likely fit: use the four-line intake below for a free written scope check before payment.';
+          return;
+        }
+        const checkedCount = fitInputs.length - missing.length;
+        if (checkedCount === 0) {
+          fitResult.dataset.state = 'incomplete';
+          fitResult.textContent = 'Check the statements above for a scope-fit result.';
+          return;
+        }
+        fitResult.dataset.state = 'blocked';
+        fitResult.textContent = `Not ready yet: ${fitGuidance[missing[0]]}`;
+      };
+
+      fitInputs.forEach((input) => input.addEventListener('change', updateFitResult));
 
       failurePresets.forEach((preset) => {
         preset.addEventListener('click', () => {

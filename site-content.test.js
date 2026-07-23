@@ -30,6 +30,14 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /navigator\.clipboard\.writeText/);
   assert.match(html, /Sanitized evidence available:/i);
   assert.match(html, /Keep names, customer data, credentials, and production logs out/i);
+  assert.match(html, /60-second scope-fit check/i);
+  assert.match(html, /I can isolate one trigger-to-result path/i);
+  assert.match(html, /expected result and what happens instead/i);
+  assert.match(html, /sanitized evidence or concrete observations/i);
+  assert.match(html, /not an emergency incident/i);
+  assert.match(html, /Likely fit: use the four-line intake below/i);
+  assert.match(html, /Not ready yet:/i);
+  assert.match(html, /data-state="ready"/i);
   assert.match(html, /Payment is requested only after you approve/i);
   assert.match(html, /Public synthetic sample/i);
   assert.match(html, /4 tests passed/i);
