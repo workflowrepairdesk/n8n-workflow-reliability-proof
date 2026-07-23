@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Workflow Reliability Preflight | Workflow Repair Desk</title>
+    <meta name="description" content="Run a private, browser-local reliability preflight on an n8n workflow export. The file never leaves your browser.">
+    <style>
+      :root{color-scheme:dark;--bg:#08100e;--panel:#111a17;--panel2:#16221e;--ink:#f4f7f5;--muted:#a8b6b0;--line:#2b3d36;--accent:#68f7b1;--amber:#ffcf70;--red:#ff7a82;--blue:#82b7ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,#173329 0,transparent 31%),var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,sans-serif}main{width:min(1060px,calc(100% - 32px));margin:auto;padding:40px 0 70px}a{color:var(--accent)}.eyebrow{color:var(--accent);font-weight:800;letter-spacing:.11em;text-transform:uppercase;font-size:13px}h1{font-size:clamp(38px,7vw,68px);line-height:1.02;letter-spacing:-.045em;margin:.2em 0}h2{margin:0 0 8px}.lead{max-width:800px;color:var(--muted);font-size:20px}.privacy{display:flex;gap:10px;align-items:flex-start;margin:24px 0;padding:16px;border:1px solid #347056;background:#10221b;border-radius:12px}.privacy strong{color:var(--accent)}.drop{display:block;margin:28px 0;padding:42px 20px;text-align:center;border:2px dashed #45685b;border-radius:16px;background:var(--panel);cursor:pointer}.drop:hover,.drop.drag{border-color:var(--accent);background:#14251f}.drop input{position:absolute;opacity:0;pointer-events:none}.button{display:inline-block;border:0;border-radius:8px;padding:12px 17px;background:var(--accent);color:#07110d;font:inherit;font-weight:850;text-decoration:none;cursor:pointer}.button.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}.button:disabled{opacity:.45;cursor:not-allowed}.small{color:var(--muted);font-size:14px}.error{display:none;margin:16px 0;padding:13px;border:1px solid var(--red);border-radius:9px;color:#ffd9dc;background:#2a1417}.results{display:none}.score-row{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:center;margin:30px 0}.score{display:grid;place-items:center;width:164px;height:164px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--score)*1%),#26332e 0);position:relative}.score:after{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--panel)}.score span{position:relative;z-index:1;font-size:42px;font-weight:900}.summary{display:flex;gap:10px;flex-wrap:wrap}.pill{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2)}.checks{display:grid;gap:10px}.check{display:grid;grid-template-columns:12px 1fr auto;gap:13px;align-items:start;padding:17px;border:1px solid var(--line);border-radius:11px;background:var(--panel)}.dot{width:10px;height:10px;margin-top:7px;border-radius:50%}.pass .dot{background:var(--accent)}.warn .dot{background:var(--amber)}.fail .dot{background:var(--red)}.check p{margin:3px 0 0;color:var(--muted)}.tag{font-size:12px;font-weight:800;text-transform:uppercase;color:var(--muted)}.locked{position:relative;overflow:hidden}.locked .check{filter:blur(5px);user-select:none}.lock-card{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:25px;background:rgba(8,16,14,.78);backdrop-filter:blur(2px)}.lock-card div{max-width:620px}.lock-card p{color:var(--muted)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}.boundary,.paid{margin-top:28px;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}.paid{border-color:#5b5030}.paid .eyebrow{color:var(--amber)}code{color:#d3e1db}footer{margin-top:40px;color:var(--muted);font-size:14px}@media(max-width:650px){.score-row{grid-template-columns:1fr}.score{margin:auto}.check{grid-template-columns:12px 1fr}.tag{grid-column:2}}
+    </style>
+  </head>
+  <body>
+    <main>
+      <a href="./">&larr; Workflow Repair Desk</a>
+      <div class="eyebrow">Private browser-local scan</div>
+      <h1>Catch workflow risks before production does.</h1>
+      <p class="lead">Choose an n8n workflow JSON export. Five reliability checks run immediately on this device—without uploading the file or sending its contents anywhere.</p>
+      <div class="privacy"><span aria-hidden="true">&#128274;</span><div><strong>Your workflow stays in this tab.</strong><br><span class="small">Parsing and analysis happen entirely in your browser. This page has no upload endpoint, analytics, account, or server-side storage. Closing or refreshing the tab clears the selected file and findings.</span></div></div>
+
+      <label class="drop" id="drop-zone">
+        <input id="file" type="file" accept="application/json,.json">
+        <span class="button">Choose workflow JSON</span>
+        <p><strong>or drop the export here</strong></p>
+        <span class="small">One JSON file · read only in memory · never uploaded</span>
+      </label>
+      <div class="error" id="error" role="alert"></div>
+
+      <section class="results" id="results" aria-live="polite">
+        <div class="score-row">
+          <div class="score" id="score-ring"><span id="score">—</span></div>
+          <div><div class="eyebrow">Preflight signal, not a guarantee</div><h2 id="headline">Scan complete</h2><p class="small" id="scan-meta"></p><div class="summary"><span class="pill" id="pass-count"></span><span class="pill" id="warn-count"></span><span class="pill" id="fail-count"></span></div></div>
+        </div>
+        <h2>Your five free checks</h2>
+        <div class="checks" id="free-checks"></div>
+        <div class="actions"><button class="button secondary" id="download">Download privacy-safe manifest</button><button class="button secondary" id="rescan">Scan another file</button></div>
+
+        <section class="locked" aria-label="Planned paid report preview">
+          <div class="checks" id="paid-checks" aria-hidden="true"></div>
+          <div class="lock-card"><div><div class="eyebrow">Planned paid report · USD 29</div><h2>Seven deeper reliability checks</h2><p>Webhook authentication and collisions, possible embedded secrets, HTTP timeouts, execution retention, node versions, and activation state—with a derived-only report.</p><a class="button" href="mailto:workflowrepairdesk@gmail.com?subject=USD%2029%20Preflight%20early%20access&amp;body=I%27d%20like%20early%20access%20to%20the%20paid%20Workflow%20Reliability%20Preflight.%0A%0APlease%20do%20not%20attach%20an%20unredacted%20workflow.">Request early access</a><p class="small"><strong>Checkout is not active yet.</strong> This link starts an email; it does not charge you.</p></div></div>
+        </section>
+      </section>
+
+      <section class="boundary"><h2>What the manifest contains</h2><p>The download contains only derived check IDs, severity/status/counts, node count, score, and generation time. It excludes the source JSON, workflow and node names, URLs, paths, parameters, expressions, credentials, field values, and raw findings.</p><p class="small">The scanner is a static review aid. It cannot observe runtime behavior, external credentials, production data, undocumented dependencies, or every platform/version nuance. Review findings before acting, and test changes safely.</p></section>
+      <footer>Workflow Repair Desk · <a href="mailto:workflowrepairdesk@gmail.com">workflowrepairdesk@gmail.com</a></footer>
+    </main>
+    <script src="preflight.js"></script>
+    <script>
+      (() => {
+        const file = document.querySelector('#file');
+        const drop = document.querySelector('#drop-zone');
+        const error = document.querySelector('#error');
+        const results = document.querySelector('#results');
+        let analysis = null;
+        const escape = (value) => String(value).replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        const checkMarkup = (check) => `<div class="check ${check.status}"><span class="dot"></span><div><strong>${escape(check.title)}</strong><p>${escape(check.summary)}</p></div><span class="tag">${escape(check.status)} · ${escape(check.severity)}</span></div>`;
+        function showError(message) { error.textContent = message; error.style.display = 'block'; }
+        async function scan(selected) {
+          error.style.display = 'none';
+          if (!selected || !selected.name.toLowerCase().endsWith('.json')) return showError('Choose a JSON export.');
+          if (selected.size > 10 * 1024 * 1024) return showError('For browser safety, this preflight accepts files up to 10 MB.');
+          try {
+            const parsed = JSON.parse(await selected.text());
+            analysis = WorkflowPreflight.analyzeWorkflow(parsed);
+            document.querySelector('#score').textContent = analysis.score;
+            document.querySelector('#score-ring').style.setProperty('--score', analysis.score);
+            document.querySelector('#headline').textContent = analysis.counts.fail ? 'Important risks need review' : analysis.counts.warn ? 'A few reliability gaps need review' : 'No flagged risks in these static checks';
+            document.querySelector('#scan-meta').textContent = `${analysis.nodeCount} nodes inspected locally · ${analysis.checkCount} checks evaluated · no upload`;
+            document.querySelector('#pass-count').textContent = `${analysis.counts.pass} passed`;
+            document.querySelector('#warn-count').textContent = `${analysis.counts.warn} warnings`;
+            document.querySelector('#fail-count').textContent = `${analysis.counts.fail} high-risk flags`;
+            document.querySelector('#free-checks').innerHTML = analysis.checks.filter((c) => c.free).map(checkMarkup).join('');
+            document.querySelector('#paid-checks').innerHTML = analysis.checks.filter((c) => !c.free).map(checkMarkup).join('');
+            drop.style.display = 'none'; results.style.display = 'block';
+          } catch (cause) { showError(cause instanceof SyntaxError ? 'That file is not valid JSON.' : cause.message); }
+        }
+        file.addEventListener('change', () => scan(file.files[0]));
+        for (const type of ['dragenter','dragover']) drop.addEventListener(type, (event) => { event.preventDefault(); drop.classList.add('drag'); });
+        for (const type of ['dragleave','drop']) drop.addEventListener(type, (event) => { event.preventDefault(); drop.classList.remove('drag'); });
+        drop.addEventListener('drop', (event) => scan(event.dataTransfer.files[0]));
+        document.querySelector('#rescan').addEventListener('click', () => { analysis = null; file.value = ''; results.style.display = 'none'; drop.style.display = 'block'; });
+        document.querySelector('#download').addEventListener('click', () => {
+          if (!analysis) return;
+          const blob = new Blob([JSON.stringify(WorkflowPreflight.createDerivedManifest(analysis), null, 2)], {type:'application/json'});
+          const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'workflow-preflight-manifest.json'; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        });
+      })();
+    </script>
+  </body>
+</html>
