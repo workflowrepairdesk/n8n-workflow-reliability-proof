@@ -6,7 +6,7 @@
 
 > **Evidence boundary:** this is a self-directed technical demonstration using synthetic data. It is not represented as client work, a production deployment, a testimonial, or evidence of financial results.
 
-[View the buyer-facing offer](https://workflowrepairdesk.github.io/n8n-workflow-reliability-proof/) · [Inspect the n8n workflow JSON](lead-triage/n8n-lead-triage.workflow.json) · [Read the acceptance tests](lead-triage/lead-triage.test.js)
+[View the buyer-facing offer](https://workflowrepairdesk.github.io/n8n-workflow-reliability-proof/) · [Inspect the USD 150 synthetic data-QA sample](https://workflowrepairdesk.github.io/n8n-workflow-reliability-proof/data-qa-sample.html) · [Inspect the n8n workflow JSON](lead-triage/n8n-lead-triage.workflow.json) · [Read the acceptance tests](lead-triage/lead-triage.test.js)
 
 ## Verify it in 60 seconds
 
@@ -20,13 +20,14 @@ cd n8n-workflow-reliability-proof
 npm test
 ```
 
-Expected result: all 13 current test entries pass. The suite includes one behavioral entry covering three routing scenarios, three parity entries proving that the JavaScript embedded in the n8n Code node produces the same outputs as the companion Node implementation, five browser-local preflight checks, and four buyer-page/privacy evidence checks. The total may grow as regression cases are added; the CI badge is the authoritative current result.
+Expected result: all 15 current test entries pass. The suite includes one behavioral entry covering three routing scenarios, three parity entries proving that the JavaScript embedded in the n8n Code node produces the same outputs as the companion Node implementation, five browser-local preflight checks, and six buyer-page/privacy evidence checks. The total may grow as regression cases are added; the CI badge is the authoritative current result.
 
 | Inspectable evidence | What it proves | What it does not claim |
 | --- | --- | --- |
 | [Lead-triage workflow](lead-triage/n8n-lead-triage.workflow.json) | The workflow structure and embedded routing logic are available for review. | Live CRM connectivity or production execution. |
 | [Behavior tests](lead-triage/lead-triage.test.js) | Priority routing, standard routing, normalization, and visible validation failure. | Performance at production traffic volumes. |
 | [n8n parity tests](lead-triage/n8n-parity.test.js) | The workflow's Code-node logic matches the locally testable implementation on the same fixtures. | Full emulation of an n8n runtime. |
+| [Synthetic data-QA sample](https://workflowrepairdesk.github.io/n8n-workflow-reliability-proof/data-qa-sample.html) | A bounded USD 150 CSV/JSON validation deliverable, evidence-linked findings, correction boundaries, and a fit-check route. | Client work, production integration, or demand. |
 | [OpenClaw VPS package](openclaw-vps/README.md) | Acceptance-test-first planning, security boundaries, rollback, and handoff discipline. | A completed client deployment. |
 | [Passing CI](https://github.com/workflowrepairdesk/n8n-workflow-reliability-proof/actions/workflows/test.yml) | The published test suite is run independently on every push and pull request. | Results outside this repository's test scope. |
 
