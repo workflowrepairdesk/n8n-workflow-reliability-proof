@@ -22,6 +22,11 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /Upwork or Contra/i);
   assert.match(html, /keep pre-contract communication and payment on-platform/i);
   assert.match(html, /Copy four-line intake/i);
+  assert.match(html, /Common automation failure patterns/i);
+  assert.match(html, /Duplicate actions after a retry/i);
+  assert.match(html, /stops without a usable downstream result/i);
+  assert.match(html, /wrong field or destination/i);
+  assert.match(html, /Failure pattern added/i);
   assert.match(html, /navigator\.clipboard\.writeText/);
   assert.match(html, /Sanitized evidence available:/i);
   assert.match(html, /Keep names, customer data, credentials, and production logs out/i);

@@ -30,6 +30,9 @@
       .label { display:inline-block; padding:4px 8px; border:1px solid var(--accent); border-radius:5px; color:var(--accent); font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
       .boundary { margin-top:42px; }
       .copy-box { margin:16px 0 0; padding:18px; border:1px dashed var(--accent); border-radius:8px; color:var(--ink); background:#0b1411; white-space:pre-wrap; font:15px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace; }
+      .failure-presets { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 4px; }
+      .failure-preset { padding:9px 12px; border:1px solid var(--line); border-radius:999px; color:var(--ink); background:#0b1411; font:inherit; cursor:pointer; }
+      .failure-preset:hover, .failure-preset:focus-visible, .failure-preset[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); }
       .copy-action { margin-top:12px; padding:10px 14px; border:1px solid var(--accent); border-radius:8px; color:var(--accent); background:transparent; font:inherit; font-weight:800; cursor:pointer; }
       .copy-action:hover, .copy-action:focus-visible { color:#07110d; background:var(--accent); }
       .copy-status { display:inline-block; margin-left:10px; color:var(--muted); font-size:14px; }
@@ -58,6 +61,12 @@
       <section class="boundary">
         <h2>Copy-paste intake</h2>
         <p>If you found this offer on Upwork or Contra, paste these four lines into that marketplace's inquiry or order requirements and keep pre-contract communication and payment on-platform. Otherwise, use them in an email. Keep names, customer data, credentials, and production logs out of the first message.</p>
+        <p><strong>Optional:</strong> choose the closest failure pattern to prefill one line.</p>
+        <div class="failure-presets" aria-label="Common automation failure patterns">
+          <button class="failure-preset" type="button" data-failure="Duplicate actions after a retry" aria-pressed="false">Duplicate actions</button>
+          <button class="failure-preset" type="button" data-failure="The workflow stops without a usable downstream result" aria-pressed="false">Silent stop</button>
+          <button class="failure-preset" type="button" data-failure="Data is routed to the wrong field or destination" aria-pressed="false">Wrong routing or mapping</button>
+        </div>
         <div class="copy-box" id="diagnostic-intake" role="group" aria-label="Copy-paste diagnostic intake template">Trigger:
 Expected result:
 What goes wrong:
@@ -85,9 +94,23 @@ Sanitized evidence available:</div>
     <script>
       const copyButton = document.getElementById('copy-intake');
       const copyStatus = document.getElementById('copy-status');
-      const intakeText = document.getElementById('diagnostic-intake').textContent.trim();
+      const intake = document.getElementById('diagnostic-intake');
+      const failurePresets = [...document.querySelectorAll('.failure-preset')];
+
+      failurePresets.forEach((preset) => {
+        preset.addEventListener('click', () => {
+          failurePresets.forEach((button) => button.setAttribute('aria-pressed', 'false'));
+          preset.setAttribute('aria-pressed', 'true');
+          intake.textContent = `Trigger:
+Expected result:
+What goes wrong: ${preset.dataset.failure}
+Sanitized evidence available:`;
+          copyStatus.textContent = 'Failure pattern added.';
+        });
+      });
 
       copyButton.addEventListener('click', async () => {
+        const intakeText = intake.textContent.trim();
         try {
           await navigator.clipboard.writeText(intakeText);
           copyStatus.textContent = 'Copied.';
