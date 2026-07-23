@@ -37,3 +37,24 @@ test('sample prominently preserves synthetic evidence boundaries', () => {
   assert.match(html, /does not emulate n8n/i);
   assert.match(html, /No production action is performed/i);
 });
+
+test('data QA sample is synthetic, bounded, priced, and connected to a buyer route', () => {
+  const html = page('data-qa-sample.html');
+  assert.match(html, /self-directed synthetic data/i);
+  assert.match(html, /not client work/i);
+  assert.match(html, /USD 150/);
+  assert.match(html, /up to 10,000 records/i);
+  assert.match(html, /Duplicate primary key/i);
+  assert.match(html, /Invalid calendar date/i);
+  assert.match(html, /Required value missing/i);
+  assert.match(html, /Quantity outlier/i);
+  assert.match(html, /Unexpected enum value/i);
+  assert.match(html, /Do not email customer data, credentials, or the dataset itself/i);
+  assert.match(html, /mailto:workflowrepairdesk@gmail\.com/);
+});
+
+test('home page exposes the data QA acquisition artifact', () => {
+  const html = page('index.html');
+  assert.match(html, /href="data-qa-sample\.html"/);
+  assert.match(html, /USD 150 data QA sprint sample/i);
+});
