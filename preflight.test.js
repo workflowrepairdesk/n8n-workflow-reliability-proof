@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { analyzeWorkflow, createDerivedManifest, createDiagnosticEmailHref } = require('./docs/preflight.js');
+const labeledCorpus = require('./preflight-corpus.js');
 
 const fixture = () => ({
   name: 'Sensitive workflow name',
@@ -62,6 +63,31 @@ test('counts only outbound operations when measuring declared retry coverage', (
   assert.equal(retry.status, 'pass');
   assert.equal(retry.count, 0);
   assert.match(retry.summary, /1 of 1 external-operation nodes declare retries/i);
+});
+
+test('matches all labeled findings across the 10-workflow synthetic corpus', () => {
+  assert.equal(labeledCorpus.length, 10);
+
+  for (const fixtureCase of labeledCorpus) {
+    const analysis = analyzeWorkflow(fixtureCase.workflow);
+    const checks = new Map(analysis.checks.map((check) => [check.id, check]));
+    assert.equal(analysis.freeCheckCount, 5, fixtureCase.label);
+
+    for (const [id, [status, count]] of Object.entries(fixtureCase.expected.free)) {
+      assert.deepEqual(
+        [checks.get(id).status, checks.get(id).count],
+        [status, count],
+        `${fixtureCase.label}: ${id}`
+      );
+    }
+    for (const [id, [status, count]] of Object.entries(fixtureCase.expected.extended)) {
+      assert.deepEqual(
+        [checks.get(id).status, checks.get(id).count],
+        [status, count],
+        `${fixtureCase.label}: ${id}`
+      );
+    }
+  }
 });
 
 test('rejects arrays and objects without a useful workflow structure', () => {

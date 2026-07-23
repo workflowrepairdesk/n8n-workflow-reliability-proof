@@ -20,13 +20,14 @@ cd n8n-workflow-reliability-proof
 npm test
 ```
 
-Expected result: the full suite passes. It covers behavioral routing, n8n parity, free browser-local scanning, buyer-page claims, and the locked premium-report engine's paid/unpaid, idempotency, privacy, and failure boundaries. The total may grow as regression cases are added; the CI badge is the authoritative current result.
+Expected result: the full suite passes. It covers behavioral routing, n8n parity, exact expected findings across a labeled 10-workflow synthetic corpus, free browser-local scanning, buyer-page claims, and the locked premium-report engine's paid/unpaid, idempotency, privacy, and failure boundaries. The total may grow as regression cases are added; the CI badge is the authoritative current result.
 
 | Inspectable evidence | What it proves | What it does not claim |
 | --- | --- | --- |
 | [Lead-triage workflow](lead-triage/n8n-lead-triage.workflow.json) | The workflow structure and embedded routing logic are available for review. | Live CRM connectivity or production execution. |
 | [Behavior tests](lead-triage/lead-triage.test.js) | Priority routing, standard routing, normalization, and visible validation failure. | Performance at production traffic volumes. |
 | [n8n parity tests](lead-triage/n8n-parity.test.js) | The workflow's Code-node logic matches the locally testable implementation on the same fixtures. | Full emulation of an n8n runtime. |
+| [Labeled preflight corpus](preflight-corpus.js) | Exact status/count agreement for five free checks across 10 synthetic workflow exports, plus selected webhook, timeout, and secret-field edge cases. | Runtime behavior or exhaustive coverage of every n8n node/version. |
 | [Synthetic data-QA sample](https://workflowrepairdesk.github.io/n8n-workflow-reliability-proof/data-qa-sample.html) | A bounded USD 150 CSV/JSON validation deliverable, evidence-linked findings, correction boundaries, and a fit-check route. | Client work, production integration, or demand. |
 | [OpenClaw VPS package](openclaw-vps/README.md) | Acceptance-test-first planning, security boundaries, rollback, and handoff discipline. | A completed client deployment. |
 | [Passing CI](https://github.com/workflowrepairdesk/n8n-workflow-reliability-proof/actions/workflows/test.yml) | The published test suite is run independently on every push and pull request. | Results outside this repository's test scope. |
