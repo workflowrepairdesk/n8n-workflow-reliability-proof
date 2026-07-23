@@ -26,6 +26,44 @@ test('analyzes an n8n-shaped export and exposes exactly five free checks', () =>
   assert.equal(analysis.checks.find((check) => check.id === 'hardcoded-secrets').status, 'fail');
 });
 
+test('does not treat webhook response plumbing as an inbound webhook or retry candidate', () => {
+  const analysis = analyzeWorkflow({
+    active: true,
+    nodes: [
+      { name: 'Inbound', type: 'n8n-nodes-base.webhook', typeVersion: 2, parameters: { path: 'synthetic-hook', authentication: 'headerAuth' } },
+      { name: 'Reply', type: 'n8n-nodes-base.respondToWebhook', typeVersion: 1, parameters: {} }
+    ],
+    connections: {},
+    settings: { errorWorkflow: 'synthetic-error-handler' }
+  });
+
+  const authentication = analysis.checks.find((check) => check.id === 'webhook-auth');
+  const retry = analysis.checks.find((check) => check.id === 'retry-policy');
+  assert.equal(authentication.status, 'pass');
+  assert.equal(authentication.count, 0);
+  assert.equal(retry.status, 'pass');
+  assert.equal(retry.count, 0);
+  assert.match(retry.summary, /No obvious external-operation nodes detected/i);
+});
+
+test('counts only outbound operations when measuring declared retry coverage', () => {
+  const analysis = analyzeWorkflow({
+    active: true,
+    nodes: [
+      { name: 'Inbound', type: 'n8n-nodes-base.webhook', typeVersion: 2, parameters: { path: 'synthetic-hook', authentication: 'headerAuth' } },
+      { name: 'API call', type: 'n8n-nodes-base.httpRequest', typeVersion: 4, retryOnFail: true, maxTries: 3, parameters: { url: 'https://example.test', options: { timeout: 5000 } } },
+      { name: 'Reply', type: 'n8n-nodes-base.respondToWebhook', typeVersion: 1, parameters: {} }
+    ],
+    connections: {},
+    settings: { errorWorkflow: 'synthetic-error-handler' }
+  });
+
+  const retry = analysis.checks.find((check) => check.id === 'retry-policy');
+  assert.equal(retry.status, 'pass');
+  assert.equal(retry.count, 0);
+  assert.match(retry.summary, /1 of 1 external-operation nodes declare retries/i);
+});
+
 test('rejects arrays and objects without a useful workflow structure', () => {
   assert.throws(() => analyzeWorkflow([]), /one JSON object/i);
   const analysis = analyzeWorkflow({ nodes: [], connections: {} });

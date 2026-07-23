@@ -45,6 +45,17 @@
     return String(node && node.type || '').toLowerCase();
   }
 
+  function isWebhookTrigger(node) {
+    const type = nodeType(node);
+    return type === 'n8n-nodes-base.webhook' || type.endsWith('.webhook');
+  }
+
+  function isRetryCandidate(node) {
+    const type = nodeType(node);
+    if (isWebhookTrigger(node) || type.includes('respondtowebhook') || type.endsWith('trigger')) return false;
+    return /httprequest|email|slack|postgres|mysql|redis|api/.test(type);
+  }
+
   function containsSecretLikeValue(value, key) {
     if (value === null || value === undefined) return false;
     if (typeof value === 'object') {
@@ -67,9 +78,9 @@
     const valid = nodes.length > 0 && workflow.connections && typeof workflow.connections === 'object';
     const disabled = nodes.filter((node) => node && node.disabled === true);
     const silent = nodes.filter((node) => node && (node.continueOnFail === true || node.onError === 'continueRegularOutput' || node.onError === 'continueErrorOutput'));
-    const retryCandidates = nodes.filter((node) => /http|request|webhook|email|slack|postgres|mysql|redis|api/.test(nodeType(node)));
+    const retryCandidates = nodes.filter(isRetryCandidate);
     const retried = retryCandidates.filter((node) => node.retryOnFail === true || Number(node.maxTries) > 1);
-    const webhooks = nodes.filter((node) => nodeType(node).includes('webhook'));
+    const webhooks = nodes.filter(isWebhookTrigger);
     const unauthenticated = webhooks.filter((node) => {
       const auth = String(node.parameters && (node.parameters.authentication || node.parameters.auth) || '').toLowerCase();
       return !auth || auth === 'none';
@@ -93,7 +104,7 @@
       result('continue-on-fail', silent.length ? 'warn' : 'pass', silent.length ? `${silent.length} node${silent.length === 1 ? '' : 's'} can continue after an error; verify downstream handling.` : 'No continue-after-error settings detected.', silent.length),
       result('retry-policy', retryCandidates.length && retried.length < retryCandidates.length ? 'warn' : 'pass', retryCandidates.length ? `${retried.length} of ${retryCandidates.length} external-operation nodes declare retries.` : 'No obvious external-operation nodes detected.', retryCandidates.length - retried.length),
       result('error-workflow', hasErrorWorkflow ? 'pass' : 'warn', hasErrorWorkflow ? 'An error workflow is configured.' : 'No workflow-level error workflow was detected.', hasErrorWorkflow ? 0 : 1),
-      result('webhook-auth', unauthenticated.length ? 'fail' : 'pass', unauthenticated.length ? `${unauthenticated.length} webhook node${unauthenticated.length === 1 ? '' : 's'} appear to have no authentication mode.` : 'No unauthenticated webhook configuration detected.', unauthenticated.length),
+      result('webhook-auth', unauthenticated.length ? 'fail' : 'pass', unauthenticated.length ? `${unauthenticated.length} webhook node${unauthenticated.length === 1 ? ' appears' : 's appear'} to have no authentication mode.` : 'No unauthenticated webhook configuration detected.', unauthenticated.length),
       result('duplicate-webhooks', duplicatePaths.length ? 'fail' : 'pass', duplicatePaths.length ? `${new Set(duplicatePaths).size} repeated webhook path${new Set(duplicatePaths).size === 1 ? '' : 's'} detected.` : 'No duplicate webhook paths detected.', new Set(duplicatePaths).size),
       result('hardcoded-secrets', possibleSecrets.length ? 'fail' : 'pass', possibleSecrets.length ? `${possibleSecrets.length} node${possibleSecrets.length === 1 ? '' : 's'} contain values under secret-like parameter names. Review locally.` : 'No obvious literal values under secret-like parameter names detected.', possibleSecrets.length),
       result('unbounded-http', noTimeout.length ? 'warn' : 'pass', noTimeout.length ? `${noTimeout.length} HTTP request node${noTimeout.length === 1 ? '' : 's'} do not declare a timeout.` : 'HTTP request nodes declare timeouts, or none were detected.', noTimeout.length),
