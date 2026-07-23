@@ -61,6 +61,9 @@
       .failure-presets { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 4px; }
       .failure-preset { padding:9px 12px; border:1px solid var(--line); border-radius:999px; color:var(--ink); background:#0b1411; font:inherit; cursor:pointer; }
       .failure-preset:hover, .failure-preset:focus-visible, .failure-preset[aria-pressed="true"] { border-color:var(--accent); color:var(--accent); }
+      .inspection-preview { margin:14px 0 4px; padding:14px 16px; border-left:4px solid var(--line); border-radius:6px; color:var(--muted); background:#0b1411; }
+      .inspection-preview[data-state="selected"] { border-color:var(--accent); color:var(--ink); }
+      .inspection-preview strong { display:block; margin-bottom:4px; color:var(--ink); }
       .intake-fields { display:grid; gap:12px; margin-top:18px; }
       .intake-fields label { display:grid; gap:6px; color:var(--ink); font-weight:750; }
       .intake-fields input { width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:8px; color:var(--ink); background:#0b1411; font:inherit; }
@@ -116,9 +119,13 @@
         <p>If you found this offer on Upwork or Contra, paste these four lines into that marketplace's inquiry or order requirements and keep pre-contract communication and payment on-platform. Otherwise, use them in an email. Keep names, customer data, credentials, and production logs out of the first message.</p>
         <p><strong>Optional:</strong> choose the closest failure pattern to prefill one line.</p>
         <div class="failure-presets" aria-label="Common automation failure patterns">
-          <button class="failure-preset" type="button" data-failure="Duplicate actions after a retry" aria-pressed="false">Duplicate actions</button>
-          <button class="failure-preset" type="button" data-failure="The workflow stops without a usable downstream result" aria-pressed="false">Silent stop</button>
-          <button class="failure-preset" type="button" data-failure="Data is routed to the wrong field or destination" aria-pressed="false">Wrong routing or mapping</button>
+          <button class="failure-preset" type="button" data-failure="Duplicate actions after a retry" data-inspection="Retry settings, repeated event identifiers, and side-effect nodes are checked for an idempotency boundary." aria-pressed="false">Duplicate actions</button>
+          <button class="failure-preset" type="button" data-failure="The workflow stops without a usable downstream result" data-inspection="Branch outputs, error-handling settings, response behavior, and missing completion signals are mapped." aria-pressed="false">Silent stop</button>
+          <button class="failure-preset" type="button" data-failure="Data is routed to the wrong field or destination" data-inspection="Condition boundaries, field mappings, and one sanitized input/output example are compared with the expected destination." aria-pressed="false">Wrong routing or mapping</button>
+        </div>
+        <div class="inspection-preview" id="inspection-preview" data-state="empty" role="status" aria-live="polite">
+          <strong>What the diagnostic would inspect</strong>
+          Choose a symptom to see the matching evidence plan. This preview is general, not a finding about your workflow.
         </div>
         <div class="intake-fields" aria-label="Browser-local diagnostic intake builder">
           <label>Trigger
@@ -164,6 +171,7 @@ Sanitized evidence available:</div>
       const copyStatus = document.getElementById('copy-status');
       const intake = document.getElementById('diagnostic-intake');
       const failurePresets = [...document.querySelectorAll('.failure-preset')];
+      const inspectionPreview = document.getElementById('inspection-preview');
       const intakeInputs = {
         trigger: document.getElementById('intake-trigger'),
         expected: document.getElementById('intake-expected'),
@@ -225,8 +233,10 @@ Sanitized evidence available: ${values.evidence}`;
           failurePresets.forEach((button) => button.setAttribute('aria-pressed', 'false'));
           preset.setAttribute('aria-pressed', 'true');
           intakeInputs.failure.value = preset.dataset.failure;
+          inspectionPreview.dataset.state = 'selected';
+          inspectionPreview.innerHTML = `<strong>What the diagnostic would inspect</strong>${preset.dataset.inspection} This is a planned inspection boundary, not a finding or guarantee.`;
           updateIntake();
-          copyStatus.textContent = 'Failure pattern added.';
+          copyStatus.textContent = 'Failure pattern and evidence plan added.';
         });
       });
 

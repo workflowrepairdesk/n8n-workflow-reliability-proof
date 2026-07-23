@@ -31,7 +31,13 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /Duplicate actions after a retry/i);
   assert.match(html, /stops without a usable downstream result/i);
   assert.match(html, /wrong field or destination/i);
-  assert.match(html, /Failure pattern added/i);
+  assert.match(html, /What the diagnostic would inspect/i);
+  assert.match(html, /idempotency boundary/i);
+  assert.match(html, /error-handling settings/i);
+  assert.match(html, /sanitized input\/output example/i);
+  assert.match(html, /planned inspection boundary, not a finding or guarantee/i);
+  assert.match(html, /inspectionPreview\.innerHTML/i);
+  assert.match(html, /Failure pattern and evidence plan added/i);
   assert.match(html, /Browser-local diagnostic intake builder/i);
   assert.match(html, /0 of 4 intake fields complete/i);
   assert.match(html, /4 of 4 intake fields complete/i);
