@@ -56,6 +56,11 @@ test('diagnostic offer states price, repair credit, scope, and contact path', ()
   assert.match(html, /Not ready yet:/i);
   assert.match(html, /data-state="ready"/i);
   assert.match(html, /Payment is requested only after you approve/i);
+  assert.match(html, /What happens after the fit check/i);
+  assert.match(html, /Two-business-day diagnostic/i);
+  assert.match(html, /agreed sanitized evidence and funded order are in place/i);
+  assert.match(html, /repair now, instrument first, or stop without buying a repair/i);
+  assert.match(html, /repair is a separate, written scope that you can accept or decline/i);
   assert.match(html, /Public synthetic sample/i);
   assert.match(html, /4 tests passed/i);
   assert.match(html, /5 ranked findings/i);
