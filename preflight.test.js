@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
-const { analyzeWorkflow, createDerivedManifest } = require('./docs/preflight.js');
+const { analyzeWorkflow, createDerivedManifest, createDiagnosticEmailHref } = require('./docs/preflight.js');
 
 const fixture = () => ({
   name: 'Sensitive workflow name',
@@ -42,6 +42,25 @@ test('derived manifest contains no source workflow values', () => {
   assert.match(manifest.privacy, /Derived findings only/i);
 });
 
+test('diagnostic email contains only whitelisted derived summary fields', () => {
+  const analysis = analyzeWorkflow(fixture());
+  analysis.checks[0].summary = 'leaked private.example.test super-secret-value';
+  analysis.checks[0].title = 'Sensitive workflow name';
+  analysis.checks.push({ id: 'private-path', status: 'fail', count: 99, summary: 'Inbound API Off' });
+  const href = createDiagnosticEmailHref(analysis);
+  const decoded = decodeURIComponent(href);
+
+  assert.match(decoded, /^mailto:workflowrepairdesk@gmail\.com\?/);
+  assert.match(decoded, /USD 125 Automation Failure Diagnostic fit check/);
+  assert.match(decoded, /Score: \d+\/100/);
+  assert.match(decoded, /Node count: 3/);
+  assert.match(decoded, /webhook-auth: fail \(1\)/);
+  assert.match(decoded, /do not attach an unredacted workflow/i);
+  for (const sensitive of ['Sensitive workflow name', 'Inbound', 'API', 'Off', 'private-path', 'private.example.test', 'super-secret-value']) {
+    assert.doesNotMatch(decoded, new RegExp(sensitive.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+});
+
 test('page states local-only privacy and does not claim checkout is active', () => {
   const html = readFileSync(join(__dirname, 'docs', 'preflight.html'), 'utf8');
   assert.match(html, /entirely in your browser/i);
@@ -50,5 +69,11 @@ test('page states local-only privacy and does not claim checkout is active', () 
   assert.match(html, /Checkout is not active yet/i);
   assert.match(html, /it does not charge you/i);
   assert.match(html, /excludes the source JSON/i);
+  assert.match(html, /One failing path[^<]*USD 125/i);
+  assert.match(html, /Buy when:/i);
+  assert.match(html, /Start a private fit-check email/i);
+  assert.match(html, /only the score, node\/check counts, and flagged check IDs/i);
+  assert.match(html, /There is no checkout on this page/i);
+  assert.match(html, /createDiagnosticEmailHref\(analysis\)/);
   assert.doesNotMatch(html, /stripe\.com|buy\.stripe/);
 });

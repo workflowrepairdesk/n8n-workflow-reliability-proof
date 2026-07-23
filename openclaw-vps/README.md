@@ -20,6 +20,8 @@ This package shows how Workflow Repair Desk would turn a fresh Ubuntu 24.04 VPS 
 - `openclaw-gateway-override.conf` — minimal systemd user-service override
 - `TELEGRAM_PHOTO_DESIGN.md` — answer to the buyer's photo-to-job-record design question
 
+- `IMPLEMENTATION_EVIDENCE.md` — sanitized checks from a live Workflow Repair Desk-owned host; explicitly not client evidence
+
 ## Acceptance test
 
 The trial passes when:

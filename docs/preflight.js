@@ -137,5 +137,33 @@
     };
   }
 
-  return { analyzeWorkflow, createDerivedManifest, FREE_CHECKS: Array.from(FREE_CHECKS) };
+  function createDiagnosticEmailHref(analysis) {
+    const knownCheckIds = new Set(definitions.map(([id]) => id));
+    const safeStatuses = new Set(['warn', 'fail']);
+    const flaggedChecks = Array.isArray(analysis && analysis.checks)
+      ? analysis.checks
+        .filter((check) => knownCheckIds.has(check.id) && safeStatuses.has(check.status))
+        .map((check) => `${check.id}: ${check.status} (${Number.isFinite(check.count) ? check.count : 0})`)
+      : [];
+    const count = (key) => Number.isFinite(analysis && analysis.counts && analysis.counts[key])
+      ? analysis.counts[key]
+      : 0;
+    const body = [
+      'I would like a free fit check for the USD 125 Automation Failure Diagnostic.',
+      '',
+      'Derived browser-local preflight summary:',
+      `Score: ${Number.isFinite(analysis && analysis.score) ? analysis.score : 0}/100`,
+      `Node count: ${Number.isFinite(analysis && analysis.nodeCount) ? analysis.nodeCount : 0}`,
+      `Checks: ${count('pass')} pass, ${count('warn')} warn, ${count('fail')} fail`,
+      `Flagged check IDs: ${flaggedChecks.length ? flaggedChecks.join(', ') : 'none'}`,
+      '',
+      'What I need help with (optional; do not include credentials or customer data):',
+      '',
+      'Please do not attach an unredacted workflow. This email contains only derived summary fields from the scan.'
+    ].join('\n');
+
+    return `mailto:workflowrepairdesk@gmail.com?subject=${encodeURIComponent('USD 125 Automation Failure Diagnostic fit check')}&body=${encodeURIComponent(body)}`;
+  }
+
+  return { analyzeWorkflow, createDerivedManifest, createDiagnosticEmailHref, FREE_CHECKS: Array.from(FREE_CHECKS) };
 });
