@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Private Workflow Reliability Report | Workflow Repair Desk</title>
+    <meta name="description" content="A staged, privacy-first premium workflow reliability report. Paid checkout is not active.">
+    <style>
+      :root{color-scheme:dark;--bg:#08100e;--panel:#111a17;--ink:#f4f7f5;--muted:#a8b6b0;--line:#2b3d36;--accent:#68f7b1;--amber:#ffcf70}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,#173329 0,transparent 31%),var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,sans-serif}main{width:min(900px,calc(100% - 32px));margin:auto;padding:42px 0 70px}a{color:var(--accent)}h1{font-size:clamp(38px,7vw,62px);line-height:1.03;letter-spacing:-.04em;margin:.2em 0}.eyebrow{color:var(--amber);font-weight:850;letter-spacing:.1em;text-transform:uppercase;font-size:13px}.lead,.small{color:var(--muted)}.lead{font-size:20px}.card{margin:24px 0;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}.locked{border-color:#665828}.button{display:inline-block;padding:12px 17px;border-radius:8px;background:var(--accent);color:#07110d;font-weight:850;text-decoration:none;border:0}.button[disabled]{opacity:.45;cursor:not-allowed}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid div{padding:16px;border:1px solid var(--line);border-radius:10px}.notice{padding:16px;border:1px solid #347056;border-radius:12px;background:#10221b}@media(max-width:650px){.grid{grid-template-columns:1fr}}
+    </style>
+  </head>
+  <body>
+    <main>
+      <a href="preflight.html">&larr; Run the free browser-local scanner</a>
+      <div class="eyebrow">Staged premium product · USD 29</div>
+      <h1>A useful report without surrendering your workflow.</h1>
+      <p class="lead">The premium engine is implemented and tested, but checkout is inactive until seller identity, tax, payout, refund, and support settings are approved by Cameron.</p>
+
+      <section class="notice">
+        <strong>Local means local.</strong> After a server-verified paid entitlement unlocks the engine, the workflow export never leaves this browser. Only a derived HTML or JSON report is created for you to download.
+      </section>
+
+      <section class="card">
+        <h2>What the report adds</h2>
+        <div class="grid">
+          <div><strong>12 deterministic checks</strong><br><span class="small">All free checks plus webhook, secret-like value, timeout, retention, version, and state signals.</span></div>
+          <div><strong>Ranked action list</strong><br><span class="small">Failing and warning rule IDs sorted by status and severity.</span></div>
+          <div><strong>Evidence boundaries</strong><br><span class="small">Every signal is labeled confirmed or heuristic and paired with a fixed recommendation.</span></div>
+          <div><strong>Private downloads</strong><br><span class="small">Derived HTML and JSON only—no names, URLs, paths, parameters, expressions, secrets, or raw finding text.</span></div>
+        </div>
+      </section>
+
+      <section class="card locked" aria-labelledby="unlock-title">
+        <div class="eyebrow">Locked safely</div>
+        <h2 id="unlock-title">Checkout is inactive</h2>
+        <p>The public page cannot unlock from a redirect parameter, a pasted Checkout Session ID, or a browser-only payment claim. Production access will require a short-lived entitlement issued only after the VPS verifies a paid Stripe Checkout Session server-side.</p>
+        <button class="button" id="unlock" disabled>Paid unlock unavailable</button>
+        <p class="small" id="gate-status">No payment is collected here. No public paid bypass is installed.</p>
+      </section>
+
+      <section class="card">
+        <h2>When static evidence is not enough</h2>
+        <p><strong>USD 125 Automation Failure Diagnostic:</strong> one bounded failing path, written evidence, and acceptance checks. The fee is credited toward an agreed repair on the same path.</p>
+        <p><strong>USD 250+ bounded repair:</strong> one agreed implementation after fit, access boundaries, rollback, and acceptance criteria are confirmed.</p>
+        <a class="button" href="mailto:workflowrepairdesk@gmail.com?subject=Private%20Workflow%20Report%20early%20access&amp;body=I%27d%20like%20early%20access%20when%20the%20USD%2029%20Private%20Workflow%20Reliability%20Report%20is%20ready.%0A%0APlease%20do%20not%20attach%20an%20unredacted%20workflow.">Request early access</a>
+      </section>
+
+      <section class="card">
+        <h2>Scope boundary</h2>
+        <p class="small">Static review only. This is not penetration testing, legal advice, compliance certification, production monitoring, or a guarantee against outages. Do not select an export containing credentials, secrets, PII, health data, card or financial-account data, employment-decision data, legal case data, or production incident dumps.</p>
+      </section>
+    </main>
+    <script src="preflight.js"></script>
+    <script src="premium-report.js"></script>
+    <script>
+      (() => {
+        const adapter = WorkflowPremiumReport.createInactiveEntitlementAdapter();
+        window.WorkflowPaidReportGate = Object.freeze({ adapter, status: 'inactive-human-gate' });
+      })();
+    </script>
+  </body>
+</html>
