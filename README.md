@@ -10,7 +10,7 @@
 
 ## Verify it in 60 seconds
 
-Considering a repair but not ready to authorize implementation? Review the [USD 125 Automation Failure Diagnostic](https://workflowrepairdesk.github.io/n8n-workflow-reliability-proof/diagnostic.html) and its prominently labeled, self-directed synthetic sample. The diagnostic fee is credited in full toward an agreed USD 250+ repair on the same path.
+Considering an n8n, webhook, or API repair but not ready to authorize implementation? Use the [60-second scope-fit check for the USD 125 Automation Failure Diagnostic](https://workflowrepairdesk.github.io/n8n-workflow-reliability-proof/diagnostic.html) before sending any workflow data. It identifies whether one trigger-to-result path, an expected-versus-actual result, sanitized evidence, and a non-emergency boundary are present. The diagnostic fee is credited in full toward an agreed USD 250+ repair on the same path.
 
 Prerequisite: Node.js 20 or newer. There are no package dependencies or credentials to install.
 
